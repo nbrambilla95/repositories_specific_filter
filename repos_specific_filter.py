@@ -45,12 +45,13 @@ EXAMPLES = r'''
 
 RETURN = r'''# '''
 
+
 def run_module():
     module = AnsibleModule(
         argument_spec=dict(
             project_name=dict(type='str', required=True),
             filter_input=dict(default='none', choices=[
-                        'none', 'webhooks', 'permissions/users', 'branches']),
+                'none', 'webhooks', 'permissions/users', 'branches']),
             key=dict(type='str'),
             value=dict(type='str'),
             username=dict(type='str', required=True),
@@ -58,10 +59,10 @@ def run_module():
         ),
         supports_check_mode=True,
 
-        required_if = [
-        ('filter_input', 'webhooks', ['key','value']),
-        ('filter_input', 'permissions/users', ['key','value']),
-        ('filter_input', 'branches', ['key','value']),
+        required_if=[
+            ('filter_input', 'webhooks', ['key', 'value']),
+            ('filter_input', 'permissions/users', ['key', 'value']),
+            ('filter_input', 'branches', ['key', 'value']),
         ]
     )
 
@@ -92,9 +93,11 @@ def run_module():
         response_bitbucket = requests.get(bitbucket_url, params={
                                           'start': start_page, 'limit': limit}, auth=basicAuthCredentials)
         if response_bitbucket.status_code == 401:
-            module.fail_json(msg=f'Request to {bitbucket_url} FAILED: Status obtained {response_bitbucket.status_code} wrong user/password')
+            module.fail_json(
+                msg=f'Request to {bitbucket_url} FAILED: Status obtained {response_bitbucket.status_code} wrong user/password')
         if response_bitbucket.status_code in bad_status:
-            module.fail_json(msg=f'Request to {bitbucket_url} FAILED: Status obtained {response_bitbucket.status_code} trying to obtain info from the project {params["project_name"]}')
+            module.fail_json(
+                msg=f'Request to {bitbucket_url} FAILED: Status obtained {response_bitbucket.status_code} trying to obtain info from the project {params["project_name"]}')
         is_last_page = response_bitbucket.json()["isLastPage"]
         if not is_last_page:
             start_page = response_bitbucket.json()["nextPageStart"]
@@ -110,7 +113,8 @@ def run_module():
         response_filter = requests.get(
             bitbucket_url_filter, auth=basicAuthCredentials)
         if response_filter.status_code in bad_status:
-            module.fail_json(msg=f'Request to {bitbucket_url_filter} FAILED: Status obtained {response_filter.status_code} trying to obtain info from the project {params["project_name"]}')
+            module.fail_json(
+                msg=f'Request to {bitbucket_url_filter} FAILED: Status obtained {response_filter.status_code} trying to obtain info from the project {params["project_name"]}')
         filter_exists = filter_exists + \
             [repo for params["filter_input"] in response_filter.json()['values'] if params["filter_input"][query.get("key")]
              == query.get("value")]
@@ -118,8 +122,10 @@ def run_module():
     result["output"] = filter_exists
     module.exit_json(**result)
 
+
 def main():
     run_module()
+
 
 if __name__ == '__main__':
     main()
