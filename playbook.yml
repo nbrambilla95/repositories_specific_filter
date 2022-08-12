@@ -1,0 +1,19 @@
+- hosts: all #To be defined or passed by rundeck
+  gather_facts: true
+
+  tasks:
+  - name: List repositories with specific filter
+    repos_specific_filter:
+      project_name: "{{ project_name }}"
+      filter_input: "{{ filter_input }}"
+      key: "{{ key }}"
+      value: "{{ value }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+    register: output_repos_specific_filter
+
+
+
+
+
+
